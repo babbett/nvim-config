@@ -1,4 +1,3 @@
--- Vim Options
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.wrap = false
@@ -8,23 +7,52 @@ vim.opt.swapfile = false
 vim.opt.signcolumn = "yes"
 vim.opt.winborder = "rounded"
 vim.opt.termguicolors = true
-vim.opt.incsearch = true -- crtl-g ctrl-t to go to next, previous when incsearching. or something
+vim.opt.incsearch = true    -- n N to go to next, previous when incsearching. or something
 vim.opt.ignorecase = true
 vim.opt.foldmethod = "expr" -- zA (unfold all), zM (fold all), zj/zk (next/prev fold)
+vim.opt.foldlevelstart = 99 -- when opening buffer, nothing is folded
 vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldtext = ""
 
+-- Link the OS and Vim clipboard together, scheduled after startup (decrease load time)
+-- Not sure if i want this, but turning it on for now?
+vim.schedule(function()
+	vim.opt.clipboard = "unnamedplus"
+end)
+
 vim.g.mapleader = ' '
 
+
 -- Basic keymap stuff
+---- save/quit
 vim.keymap.set('n', '<leader>o', ':update<CR> :source<CR>')
 vim.keymap.set('n', '<leader>w', ':write<CR>')
-vim.keymap.set('n', '<leader>q', ':quit<CR>')
+vim.keymap.set({'n', 'x'}, '<leader>q', ':quit<CR>')
+---- yanking
 vim.keymap.set({ 'n', 'v', 'x' }, '<leader>y', '"+y<CR>')
 vim.keymap.set({ 'n', 'v', 'x' }, '<leader>d', '"+d<CR>')
 vim.keymap.set({ 'n', 'v', 'x' }, '<leader>s', ':e #<CR>')
 vim.keymap.set({ 'n', 'v', 'x' }, '<leader>S', ':sf #<CR>')
+----- terminal
 vim.keymap.set('n', '<leader>t', ':below terminal<CR>i')
+---- splits
+-- vim.keymap.set('n', '<leader>p', ':vsplit<CR>')
+---- rename (should just use 'grn' instead
+-- vim.keymap.set('n', '<leader>r', function()
+-- 	local newname = vim.fn.input("Enter new name:")
+-- 	vim.lsp.buf.rename(newname)
+-- end
+-- )
+
+-- can use gd to get definition, what can i do to get usage?
+-- vim.keymap.set('n', '<leader>gu', function()
+--
+-- end)
+
+-- function Refactor()
+-- 	local new_name = vim.fn.input("Enter new name:")
+-- 	vim.lsp.buf.rename(new_name)
+-- end
 
 -- Add plugins here
 vim.pack.add({
@@ -33,14 +61,27 @@ vim.pack.add({
 	{ src = "https://github.com/echasnovski/mini.pick" },
 	{ src = "https://github.com/mason-org/mason.nvim" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
+	{ src = "https://github.com/S1M0N38/love2d.nvim" },
+	{ src = "https://github.com/adelarsq/image_preview.nvim" },
+	-- { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 	--{ src = "https://github.com/neovim/nvim-lspconfig" }
 	-- moved everything locally, can config the lsp in the ./lsp folder
 })
 
-require "mini.pick".setup()
-require "oil".setup({
-	view_options = { show_hidden = true }
+require "love2d.config".setup({
+	path_to_love_bin = "/Applications/love.app/Contents/MacOS/love",
+	debug_window_opts = {
+		split = "below"
+	}
 })
+
+require "mini.pick".setup()
+local image_preview = require "image_preview"
+image_preview.setup()
+
+local oil = require "oil"
+oil.setup()
+
 require "mason".setup()
 require "nvim-treesitter.configs".setup({
 	ensure_installed = { "lua", "typescript", "javascript", "css", "html", "python", "cpp" },
@@ -59,12 +100,19 @@ vim.api.nvim_create_autocmd('LspAttach', {
 vim.cmd("set completeopt+=noselect")
 
 -- Config Plugins
+---- Pick
 vim.keymap.set('n', '<leader>f', ":Pick files<CR>")
 vim.keymap.set('n', '<leader>h', ":Pick help<CR>")
-
-
+---- Oil
 vim.keymap.set('n', '<leader>ee', ":Oil<CR>")
 vim.keymap.set('n', '<leader>ec', ":Oil ~/.config/nvim<CR>")
+vim.keymap.set('n', '<leader>ef', oil.toggle_float)
+vim.keymap.set('n', '<leader>eh', oil.toggle_hidden)
+---- Love
+vim.keymap.set('n', "<leader>vv", "<cmd>LoveRun<cr>")
+vim.keymap.set('n', "<leader>vs", "<cmd>LoveStop<cr>")
+---- image preview (not supported in iterm2)
+vim.keymap.set('n', "<leader>i", image_preview.PreviewImageOil)
 
 
 -- LSP configs
@@ -78,6 +126,7 @@ vim.cmd("colorscheme vague")
 vim.cmd(":hi statusline guibg=NONE")
 
 
+
 -- This is all noob shit
 --
 --
@@ -89,5 +138,13 @@ vim.cmd(":hi statusline guibg=NONE")
 -- Buffers, Windows, and Tabs --
 -- Buffer: text file in memory. :ls to view them
 -- Window: viewport on the buffer. :vsp creates a vertical split, two viewports
+
 -- on one buffer. :b *name of buffer* to show a buffer in a window
+
 -- Tabs: collection of windows. Basically a layout, not actually a tab
+--
+-- Commenting:
+-- g is a weird command that puts vim into a mode i do not currently understand. does some useful stuff tho
+-- gc{motion} comments out whatever is described by the motion
+-- gcc comments out a single line (kinda?)
+-- gx goes to the link/executes a program
