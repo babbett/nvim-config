@@ -27,7 +27,7 @@ vim.g.mapleader = ' '
 ---- save/quit
 vim.keymap.set('n', '<leader>o', ':update<CR> :source<CR>')
 vim.keymap.set('n', '<leader>w', ':write<CR>')
-vim.keymap.set({'n', 'x'}, '<leader>q', ':quit<CR>')
+vim.keymap.set({ 'n', 'x' }, '<leader>q', ':quit<CR>')
 ---- yanking
 vim.keymap.set({ 'n', 'v', 'x' }, '<leader>y', '"+y<CR>')
 vim.keymap.set({ 'n', 'v', 'x' }, '<leader>d', '"+d<CR>')
@@ -63,10 +63,21 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 	{ src = "https://github.com/S1M0N38/love2d.nvim" },
 	{ src = "https://github.com/adelarsq/image_preview.nvim" },
+	{ src = "https://github.com/akinsho/toggleterm.nvim" },
 	-- { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 	--{ src = "https://github.com/neovim/nvim-lspconfig" }
 	-- moved everything locally, can config the lsp in the ./lsp folder
 })
+
+require "toggleterm".setup()
+local Terminal  = require('toggleterm.terminal').Terminal
+local lazygit = Terminal:new({ cmd = "lazygit", hidden = true })
+
+function _lazygit_toggle()
+  lazygit:toggle()
+end
+
+vim.keymap.set("n", "<leader>g", "<cmd>lua _lazygit_toggle()<CR>", {noremap = true, silent = true})
 
 require "love2d.config".setup({
 	path_to_love_bin = "/Applications/love.app/Contents/MacOS/love",
@@ -101,13 +112,15 @@ vim.cmd("set completeopt+=noselect")
 
 -- Config Plugins
 ---- Pick
-vim.keymap.set('n', '<leader>f', ":Pick files<CR>")
-vim.keymap.set('n', '<leader>h', ":Pick help<CR>")
+vim.keymap.set('n', '<leader>f', ':Pick files<CR>')
+vim.keymap.set('v', '<leader>f', '"fyaa:Pick files<CR>')
+vim.keymap.set('n', '<leader>h', ':Pick help<CR>')
 ---- Oil
 vim.keymap.set('n', '<leader>ee', ":Oil<CR>")
 vim.keymap.set('n', '<leader>ec', ":Oil ~/.config/nvim<CR>")
 vim.keymap.set('n', '<leader>ef', oil.toggle_float)
 vim.keymap.set('n', '<leader>eh', oil.toggle_hidden)
+vim.keymap.set('n', '<leader>v', oil.toggle_hidden)
 ---- Love
 vim.keymap.set('n', "<leader>vv", "<cmd>LoveRun<cr>")
 vim.keymap.set('n', "<leader>vs", "<cmd>LoveStop<cr>")
