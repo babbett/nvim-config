@@ -35,6 +35,10 @@ vim.keymap.set({ 'n', 'v', 'x' }, '<leader>s', ':e #<CR>')
 vim.keymap.set({ 'n', 'v', 'x' }, '<leader>S', ':sf #<CR>')
 ----- terminal
 vim.keymap.set('n', '<leader>t', ':below terminal<CR>i')
+
+
+vim.keymap.set('i', 'jk', '<esc>')
+
 ---- splits
 -- vim.keymap.set('n', '<leader>p', ':vsplit<CR>')
 ---- rename (should just use 'grn' instead
