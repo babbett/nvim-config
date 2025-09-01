@@ -76,20 +76,23 @@ vim.pack.add({
 	{ src = "https://github.com/S1M0N38/love2d.nvim" },
 	{ src = "https://github.com/adelarsq/image_preview.nvim" },
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
+	{ src = "https://github.com/karb94/neoscroll.nvim" },
 	-- { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 	--{ src = "https://github.com/neovim/nvim-lspconfig" }
 	-- moved everything locally, can config the lsp in the ./lsp folder
 })
+-- trying out smooth scrolling
+require "neoscroll".setup()
 
 require "toggleterm".setup()
-local Terminal  = require('toggleterm.terminal').Terminal
-local lazygit = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
+local Terminal = require('toggleterm.terminal').Terminal
+local lazygit  = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
 
 function _lazygit_toggle()
-  lazygit:toggle()
+	lazygit:toggle()
 end
 
-vim.keymap.set("n", "<leader>g", "<cmd>lua _lazygit_toggle()<CR>", {noremap = true, silent = true})
+vim.keymap.set("n", "<leader>g", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
 
 require "love2d.config".setup({
 	path_to_love_bin = "/Applications/love.app/Contents/MacOS/love",
@@ -98,6 +101,7 @@ require "love2d.config".setup({
 	}
 })
 
+-- Necessary Plugins
 require "mini.pick".setup()
 local image_preview = require "image_preview"
 image_preview.setup()
@@ -152,9 +156,6 @@ vim.cmd(":hi statusline guibg=NONE")
 
 
 
--- This is all noob shit
---
---
 -- Notes on some mappings so I don't forget --
 -- Hover (vim.lsp.buf.hover()): shift-K, shift-K-K to go into the menu
 -- Native LSP hover: Ctrl-W-D (window diagnostic)
