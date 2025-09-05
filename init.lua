@@ -82,10 +82,19 @@ vim.pack.add({
 	{ src = "https://github.com/karb94/neoscroll.nvim" },
 	{ src = "https://github.com/benomahony/oil-git.nvim" },
 	{ src = "https://github.com/nvim-mini/mini.icons" },
+	{ src = "https://github.com/zbirenbaum/copilot.lua" },
 	-- { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 	--{ src = "https://github.com/neovim/nvim-lspconfig" }
 	-- moved everything locally, can config the lsp in the ./lsp folder
 })
+
+require "copilot".setup({
+	suggestion = {
+		enabled = true,
+		auto_trigger = true
+	}
+})
+
 -- trying out smooth scrolling
 require "neoscroll".setup({
 		duration_multiplier = .5
