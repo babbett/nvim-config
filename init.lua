@@ -80,6 +80,7 @@ vim.pack.add({
 	{ src = "https://github.com/adelarsq/image_preview.nvim" },
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
 	{ src = "https://github.com/karb94/neoscroll.nvim" },
+	{ src = "https://github.com/benomahony/oil-git.nvim" },
 	-- { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 	--{ src = "https://github.com/neovim/nvim-lspconfig" }
 	-- moved everything locally, can config the lsp in the ./lsp folder
@@ -112,7 +113,11 @@ local image_preview = require "image_preview"
 image_preview.setup()
 
 local oil = require "oil"
-oil.setup()
+oil.setup({
+	columns = { "icon" }
+})
+
+require("oil-git").setup()
 
 require "mason".setup()
 require "nvim-treesitter.configs".setup({
