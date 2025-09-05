@@ -81,6 +81,7 @@ vim.pack.add({
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
 	{ src = "https://github.com/karb94/neoscroll.nvim" },
 	{ src = "https://github.com/benomahony/oil-git.nvim" },
+	{ src = "https://github.com/nvim-mini/mini.icons" },
 	-- { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
 	--{ src = "https://github.com/neovim/nvim-lspconfig" }
 	-- moved everything locally, can config the lsp in the ./lsp folder
@@ -111,6 +112,8 @@ require "love2d.config".setup({
 require "mini.pick".setup()
 local image_preview = require "image_preview"
 image_preview.setup()
+
+require "mini.icons".setup()
 
 local oil = require "oil"
 oil.setup({
