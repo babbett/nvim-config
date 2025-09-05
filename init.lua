@@ -13,6 +13,8 @@ vim.opt.foldmethod = "expr" -- zA (unfold all), zM (fold all), zj/zk (next/prev 
 vim.opt.foldlevelstart = 99 -- when opening buffer, nothing is folded
 vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldtext = ""
+vim.opt.scrolloff = 7
+
 
 -- Link the OS and Vim clipboard together, scheduled after startup (decrease load time)
 -- Not sure if i want this, but turning it on for now?
@@ -43,10 +45,11 @@ vim.keymap.set('n', '<C-k>', '<C-w>k')
 vim.keymap.set('n', '<C-h>', '<C-w>h')
 vim.keymap.set('n', '<C-l>', '<C-w>l')
 
-vim.keymap.set('n', '<C-up>', '<C-w>+')
-vim.keymap.set('n', '<C-down>', '<C-w>-')
-vim.keymap.set('n', '<C-left>', '<C-w>>')
-vim.keymap.set('n', '<C-right>', '<C-w><')
+-- vim.keymap.set('n', '<C-J>', '<C-w>+')
+-- vim.keymap.set('n', '<C-K>', '<C-w>-')
+-- vim.keymap.set('n', '<C-H>', '<C-w>>')
+-- vim.keymap.set('n', '<C-L>', '<C-w><')
+
 ---- splits
 -- vim.keymap.set('n', '<leader>p', ':vsplit<CR>')
 ---- rename (should just use 'grn' instead
@@ -82,7 +85,9 @@ vim.pack.add({
 	-- moved everything locally, can config the lsp in the ./lsp folder
 })
 -- trying out smooth scrolling
-require "neoscroll".setup()
+require "neoscroll".setup({
+		duration_multiplier = .5
+})
 
 require "toggleterm".setup()
 local Terminal = require('toggleterm.terminal').Terminal
@@ -131,6 +136,7 @@ vim.cmd("set completeopt+=noselect")
 vim.keymap.set('n', '<leader>f', ':Pick files<CR>')
 vim.keymap.set('v', '<leader>f', '"fyaa:Pick files<CR>')
 vim.keymap.set('n', '<leader>h', ':Pick help<CR>')
+vim.keymap.set('n', '<leader>F', ':Pick grep<CR>')
 ---- Oil
 vim.keymap.set('n', '<leader>ee', ":Oil<CR>")
 vim.keymap.set('n', '<leader>ec', ":Oil ~/.config/nvim<CR>")
