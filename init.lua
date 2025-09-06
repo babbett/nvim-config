@@ -71,7 +71,10 @@ vim.keymap.set('n', '<C-l>', '<C-w>l')
 
 -- Add plugins here
 vim.pack.add({
+	-- themes 
 	{ src = "https://github.com/vague-1k/vague.nvim" },
+	{ src = "https://github.com/github-main-user/lytmode.nvim" },
+	-- plugins
 	{ src = "https://github.com/stevearc/oil.nvim" },
 	{ src = "https://github.com/echasnovski/mini.pick" },
 	{ src = "https://github.com/mason-org/mason.nvim" },
@@ -174,10 +177,9 @@ vim.lsp.enable({ "lua_ls", "pylsp" })
 vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format)
 
 -- Colors!!
-vim.cmd("colorscheme vague")
+--vim.cmd("colorscheme vague")
+vim.cmd("colorscheme lytmode")
 vim.cmd(":hi statusline guibg=NONE")
-
-
 
 -- Notes on some mappings so I don't forget --
 -- Hover (vim.lsp.buf.hover()): shift-K, shift-K-K to go into the menu
