@@ -72,7 +72,7 @@ vim.keymap.set('n', '<C-l>', '<C-w>l')
 -- Add plugins here
 vim.pack.add({
 	-- themes 
-	{ src = "https://github.com/vague-1k/vague.nvim" },
+	{ src = "https://github.com/vague-theme/vague.nvim" },
 	{ src = "https://github.com/github-main-user/lytmode.nvim" },
 	-- plugins
 	{ src = "https://github.com/stevearc/oil.nvim" },
