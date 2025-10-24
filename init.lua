@@ -98,9 +98,14 @@ require "copilot".setup({
 	}
 })
 
--- trying out smooth scrolling
+function _copilot_toggle()
+	require("copilot.suggestion").toggle_auto_trigger()
+end
+
+vim.keymap.set("n", "<leader>c", "<cmd>lua _copilot_toggle()<CR>", { noremap = true, silent = true })
+
 require "neoscroll".setup({
-		duration_multiplier = .5
+	duration_multiplier = .5
 })
 
 require "toggleterm".setup()
@@ -129,7 +134,7 @@ require "mini.icons".setup()
 
 local oil = require "oil"
 oil.setup({
-	columns = { "icon" }
+	columns = { "size",  "icon" }
 })
 
 require("oil-git").setup()
@@ -177,9 +182,23 @@ vim.lsp.enable({ "lua_ls", "pylsp" })
 vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format)
 
 -- Colors!!
---vim.cmd("colorscheme vague")
+-- vim.cmd("colorscheme vague")
 vim.cmd("colorscheme lytmode")
-vim.cmd(":hi statusline guibg=NONE")
+-- vim.cmd(":hi statusline guibg=#1e3e6e guifg=#000000")
+-- vim.cmd(":hi statusline guibg=NONE")
+
+-- Some modifitcations to the theme
+vim.cmd(":hi statusline guibg=NONE guifg=#00f0f0")
+-- set the background of the ui black
+vim.cmd(":hi Normal guibg=black")
+vim.cmd(":hi SignColumn guibg=black")
+vim.cmd(":hi LineNr guibg=black guifg=#444444")
+-- set the number column numbers to a dark gray
+vim.cmd(":hi CursorLineNr guibg=#000000 guifg=#000000")
+
+-- make the line number of the current line stand out
+vim.cmd(":hi Folded guibg=black guifg=#ffffff")
+
 
 -- Notes on some mappings so I don't forget --
 -- Hover (vim.lsp.buf.hover()): shift-K, shift-K-K to go into the menu
