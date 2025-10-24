@@ -188,7 +188,7 @@ vim.cmd("colorscheme lytmode")
 -- vim.cmd(":hi statusline guibg=NONE")
 
 -- Some modifitcations to the theme
-vim.cmd(":hi statusline guibg=NONE guifg=#00f0f0")
+vim.cmd(":hi statusline guibg=NONE guifg=#cc8222")
 -- set the background of the ui black
 vim.cmd(":hi Normal guibg=black")
 vim.cmd(":hi SignColumn guibg=black")
