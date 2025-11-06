@@ -11,7 +11,7 @@ vim.opt.incsearch = true    -- n N to go to next, previous when incsearching. or
 vim.opt.ignorecase = true
 vim.opt.foldmethod = "expr" -- zA (unfold all), zM (fold all), zj/zk (next/prev fold)
 vim.opt.foldlevelstart = 99 -- when opening buffer, nothing is folded
-vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+-- vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldtext = ""
 vim.opt.scrolloff = 7
 
@@ -35,10 +35,6 @@ vim.keymap.set({ 'n', 'v', 'x' }, '<leader>y', '"+y<CR>')
 vim.keymap.set({ 'n', 'v', 'x' }, '<leader>d', '"+d<CR>')
 vim.keymap.set({ 'n', 'v', 'x' }, '<leader>s', ':e #<CR>')
 vim.keymap.set({ 'n', 'v', 'x' }, '<leader>S', ':sf #<CR>')
------ terminal
-vim.keymap.set('n', '<leader>t', ':below terminal<CR>i')
-
-vim.keymap.set('i', 'jk', '<esc>')
 
 vim.keymap.set('n', '<C-j>', '<C-w>j')
 vim.keymap.set('n', '<C-k>', '<C-w>k')
@@ -71,7 +67,7 @@ vim.keymap.set('n', '<C-l>', '<C-w>l')
 
 -- Add plugins here
 vim.pack.add({
-	-- themes 
+	-- themes
 	{ src = "https://github.com/vague-theme/vague.nvim" },
 	{ src = "https://github.com/github-main-user/lytmode.nvim" },
 	-- plugins
@@ -118,10 +114,19 @@ end
 
 vim.keymap.set("n", "<leader>g", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
 
+----- terminal
+local floatterm = Terminal:new({ direction = "float" })
+function _float_term_toggle()
+	floatterm:toggle()
+end
+
+vim.keymap.set("n", "<leader>t", "<cmd>lua _float_term_toggle()<CR>", { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>T', ':below terminal<CR>i')
+
 require "love2d.config".setup({
 	path_to_love_bin = "/Applications/love.app/Contents/MacOS/love",
 	debug_window_opts = {
-		split = "below"
+		split = "right"
 	}
 })
 
@@ -134,7 +139,7 @@ require "mini.icons".setup()
 
 local oil = require "oil"
 oil.setup({
-	columns = { "size",  "icon" }
+	columns = { "size", "icon" }
 })
 
 require("oil-git").setup()
@@ -149,6 +154,10 @@ require "nvim-treesitter.configs".setup({
 vim.api.nvim_create_autocmd('LspAttach', {
 	callback = function(ev)
 		local client = vim.lsp.get_client_by_id(ev.data.client_id)
+		if client == nil then
+			print("LSP client not found")
+			return
+		end
 		if client:supports_method('textDocument/completion') then
 			vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
 		end
