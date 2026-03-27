@@ -1,25 +1,30 @@
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.wrap = false
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.swapfile = false
-vim.opt.signcolumn = "yes"
-vim.opt.winborder = "rounded"
-vim.opt.termguicolors = true
-vim.opt.incsearch = true    -- n N to go to next, previous when incsearching. or something
-vim.opt.ignorecase = true
-vim.opt.foldmethod = "expr" -- zA (unfold all), zM (fold all), zj/zk (next/prev fold)
-vim.opt.foldlevelstart = 99 -- when opening buffer, nothing is folded
+local opts = vim.opt
+local keymap = vim.keymap
+local cmd = vim.cmd
+local pack = vim.pack
+
+opts.number = true
+opts.relativenumber = true
+opts.wrap = false
+opts.tabstop = 2
+opts.shiftwidth = 2
+opts.swapfile = false
+opts.signcolumn = "yes"
+opts.winborder = "rounded"
+opts.termguicolors = true
+opts.incsearch = true    -- n N to go to next, previous when incsearching. or something
+opts.ignorecase = true
+opts.foldmethod = "expr" -- zA (unfold all), zM (fold all), zj/zk (next/prev fold)
+opts.foldlevelstart = 99 -- when opening buffer, nothing is folded
 -- vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-vim.opt.foldtext = ""
-vim.opt.scrolloff = 7
+opts.foldtext = ""
+opts.scrolloff = 7
 
 
 -- Link the OS and Vim clipboard together, scheduled after startup (decrease load time)
 -- Not sure if i want this, but turning it on for now?
 vim.schedule(function()
-	vim.opt.clipboard = "unnamedplus"
+	opts.clipboard = "unnamedplus"
 end)
 
 vim.g.mapleader = ' '
@@ -27,50 +32,25 @@ vim.g.mapleader = ' '
 
 -- Basic keymap stuff
 ---- save/quit
-vim.keymap.set('n', '<leader>o', ':update<CR> :source<CR>')
-vim.keymap.set('n', '<leader>w', ':write<CR>')
-vim.keymap.set({ 'n', 'x' }, '<leader>q', ':quit<CR>')
+keymap.set('n', '<leader>o', ':update<CR> :source<CR>')
+keymap.set('n', '<leader>w', ':write<CR>')
+keymap.set({ 'n', 'x' }, '<leader>q', ':quit<CR>')
 ---- yanking
-vim.keymap.set({ 'n', 'v', 'x' }, '<leader>y', '"+y<CR>')
-vim.keymap.set({ 'n', 'v', 'x' }, '<leader>d', '"+d<CR>')
-vim.keymap.set({ 'n', 'v', 'x' }, '<leader>s', ':e #<CR>')
-vim.keymap.set({ 'n', 'v', 'x' }, '<leader>S', ':sf #<CR>')
+keymap.set({ 'n', 'v', 'x' }, '<leader>y', '"+y<CR>')
+keymap.set({ 'n', 'v', 'x' }, '<leader>d', '"+d<CR>')
+keymap.set({ 'n', 'v', 'x' }, '<leader>s', ':e #<CR>')
+keymap.set({ 'n', 'v', 'x' }, '<leader>S', ':sf #<CR>')
 
-vim.keymap.set('n', '<C-j>', '<C-w>j')
-vim.keymap.set('n', '<C-k>', '<C-w>k')
-vim.keymap.set('n', '<C-h>', '<C-w>h')
-vim.keymap.set('n', '<C-l>', '<C-w>l')
+keymap.set('n', '<C-j>', '<C-w>j')
+keymap.set('n', '<C-k>', '<C-w>k')
+keymap.set('n', '<C-h>', '<C-w>h')
+keymap.set('n', '<C-l>', '<C-w>l')
 
--- vim.keymap.set('n', '<C-J>', '<C-w>+')
--- vim.keymap.set('n', '<C-K>', '<C-w>-')
--- vim.keymap.set('n', '<C-H>', '<C-w>>')
--- vim.keymap.set('n', '<C-L>', '<C-w><')
-
----- splits
+-- splits
 -- vim.keymap.set('n', '<leader>p', ':vsplit<CR>')
----- rename (should just use 'grn' instead
--- vim.keymap.set('n', '<leader>r', function()
--- 	local newname = vim.fn.input("Enter new name:")
--- 	vim.lsp.buf.rename(newname)
--- end
--- )
-
--- can use gd to get definition, what can i do to get usage?
--- vim.keymap.set('n', '<leader>gu', function()
---
--- end)
-
--- function Refactor()
--- 	local new_name = vim.fn.input("Enter new name:")
--- 	vim.lsp.buf.rename(new_name)
--- end
 
 -- Add plugins here
-vim.pack.add({
-	-- themes
-	{ src = "https://github.com/vague-theme/vague.nvim" },
-	{ src = "https://github.com/github-main-user/lytmode.nvim" },
-	-- plugins
+pack.add({
 	{ src = "https://github.com/stevearc/oil.nvim" },
 	{ src = "https://github.com/echasnovski/mini.pick" },
 	{ src = "https://github.com/mason-org/mason.nvim" },
@@ -82,47 +62,106 @@ vim.pack.add({
 	{ src = "https://github.com/benomahony/oil-git.nvim" },
 	{ src = "https://github.com/nvim-mini/mini.icons" },
 	{ src = "https://github.com/zbirenbaum/copilot.lua" },
-	-- { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
-	--{ src = "https://github.com/neovim/nvim-lspconfig" }
-	-- moved everything locally, can config the lsp in the ./lsp folder
+	{ src = "https://github.com/chentoast/marks.nvim" },
+	{ src = "https://github.com/davidmh/mdx.nvim.git" },
+	-- web dev lsps
+	--   use 'neovim/nvim-lspconfig'
+	{ src = "https://github.com/neovim/nvim-lspconfig.git" },
+	{ src = "https://github.com/hrsh7th/nvim-cmp.git" },
+	{ src = "https://github.com/hrsh7th/cmp-nvim-lsp.git" },
+	{ src = "https://github.com/hrsh7th/cmp-nvim-lsp-signature-help.git" },
+	{ src = "https://github.com/hrsh7th/cmp-buffer.git" },
+	{ src = "https://github.com/hrsh7th/cmp-path.git" },
+  -- Prettier
+	{ src = "https://github.com/prettier/vim-prettier.git" },
+  -- use {
+  --   'prettier/vim-prettier',
+  --   run = 'yarn install --frozen-lockfile --production',
+  --   ft = {'javascript', 'typescript', 'css', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'}
+  -- }
 })
 
-require "copilot".setup({
-	suggestion = {
-		enabled = true,
-		auto_trigger = true
-	}
+-- Config copilot plugin
+-- require "copilot".setup({
+-- 	suggestion = {
+-- 		enabled = true,
+-- 		auto_trigger = true
+-- 	},
+-- 	panel = {
+-- 		enabled = true,
+-- 		auto_refresh = true,
+-- 		layout = {
+-- 			position = "right", -- | top | left | right | bottom |
+-- 			ratio = 0.4
+-- 		},
+-- 	},
+-- })
+
+-- local function _copilot_toggle()
+-- 	if vim.g.copilot_enabled == nil then
+-- 		vim.g.copilot_enabled = true
+-- 	end
+--
+-- 	if vim.g.copilot_enabled then
+-- 		print("Copilot disabled")
+-- 	else
+-- 		print("Copilot enabled")
+-- 	end
+--
+-- 	-- this just tracks the state, toggle_auto_trigger actually does the
+-- 	-- disable/enable
+-- 	vim.g.copilot_enabled = not vim.g.copilot_enabled
+--
+-- 	require("copilot.suggestion").toggle_auto_trigger()
+-- end
+--
+-- keymap.set("n", "<leader>c", _copilot_toggle, { noremap = true, silent = true })
+-- keymap.set("n", "<leader>cp", ":Copilot panel toggle<CR>")
+
+-- Config marks plubing
+require "marks".setup({
+	default_mappings = true,
+	cyclic = true
 })
 
-function _copilot_toggle()
-	require("copilot.suggestion").toggle_auto_trigger()
-end
 
-vim.keymap.set("n", "<leader>c", "<cmd>lua _copilot_toggle()<CR>", { noremap = true, silent = true })
-
+-- Config neoscroll
 require "neoscroll".setup({
 	duration_multiplier = .5
 })
 
+-- Config lazygit
 require "toggleterm".setup()
 local Terminal = require('toggleterm.terminal').Terminal
 local lazygit  = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
 
-function _lazygit_toggle()
+local function _lazygit_toggle()
 	lazygit:toggle()
 end
 
-vim.keymap.set("n", "<leader>g", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
+keymap.set("n", "<leader>g", _lazygit_toggle, { noremap = true, silent = true })
 
------ terminal
+-- Config terminal
 local floatterm = Terminal:new({ direction = "float" })
-function _float_term_toggle()
+
+local function _float_term_toggle()
 	floatterm:toggle()
 end
 
-vim.keymap.set("n", "<leader>t", "<cmd>lua _float_term_toggle()<CR>", { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>T', ':below terminal<CR>i')
+keymap.set("n", "<leader>t", _float_term_toggle, { noremap = true, silent = true })
+keymap.set('n', '<leader>T', ':below terminal<CR>i')
 
+-- Mini Pick config
+require "mini.pick".setup()
+local image_preview = require "image_preview"
+image_preview.setup()
+
+keymap.set('n', '<leader>f', ':Pick files<CR>')
+keymap.set('v', '<leader>f', '"fyaa:Pick files<CR>')
+keymap.set('n', '<leader>h', ':Pick help<nCR>')
+-- would like to figure out a way to pick from the man pages
+keymap.set('n', '<leader>F', ':Pick grep<CR>')
+-- Love2D config
 require "love2d.config".setup({
 	path_to_love_bin = "/Applications/love.app/Contents/MacOS/love",
 	debug_window_opts = {
@@ -130,27 +169,37 @@ require "love2d.config".setup({
 	}
 })
 
--- Necessary Plugins
-require "mini.pick".setup()
-local image_preview = require "image_preview"
-image_preview.setup()
+vim.keymap.set('n', "<leader>vv", "<cmd>LoveRun<cr>")
+vim.keymap.set('n', "<leader>vs", "<cmd>LoveStop<cr>")
+require "plugins/love"
 
+
+-- Mini icons (for oil)
 require "mini.icons".setup()
 
+-- Oil config
 local oil = require "oil"
 oil.setup({
 	columns = { "size", "icon" }
 })
 
 require("oil-git").setup()
+keymap.set('n', '<leader>ee', ":Oil<CR>")
+keymap.set('n', '<leader>ec', ":Oil ~/.config/nvim<CR>")
+keymap.set('n', '<leader>ef', oil.toggle_float)
+keymap.set('n', '<leader>eh', oil.toggle_hidden)
+keymap.set('n', '<leader>v', oil.toggle_hidden)
+keymap.set('n', "<leader>i", image_preview.PreviewImageOil)
 
+-- Mason and Treesitter config
 require "mason".setup()
 require "nvim-treesitter.configs".setup({
-	ensure_installed = { "lua", "typescript", "javascript", "css", "html", "python", "cpp" },
+	ensure_installed = { "astro", "lua", "typescript", "javascript", "css", "html", "python", "cpp" },
 	highlight = { enable = true }
 })
 
--- Genuinely don't know how this works... seems to work though. from some blog
+-- Auto Commands
+-- LSP-based autocompletion when LSP attaches
 vim.api.nvim_create_autocmd('LspAttach', {
 	callback = function(ev)
 		local client = vim.lsp.get_client_by_id(ev.data.client_id)
@@ -163,67 +212,34 @@ vim.api.nvim_create_autocmd('LspAttach', {
 		end
 	end,
 })
-vim.cmd("set completeopt+=noselect")
 
--- Config Plugins
----- Pick
-vim.keymap.set('n', '<leader>f', ':Pick files<CR>')
-vim.keymap.set('v', '<leader>f', '"fyaa:Pick files<CR>')
-vim.keymap.set('n', '<leader>h', ':Pick help<CR>')
-vim.keymap.set('n', '<leader>F', ':Pick grep<CR>')
----- Oil
-vim.keymap.set('n', '<leader>ee', ":Oil<CR>")
-vim.keymap.set('n', '<leader>ec', ":Oil ~/.config/nvim<CR>")
-vim.keymap.set('n', '<leader>ef', oil.toggle_float)
-vim.keymap.set('n', '<leader>eh', oil.toggle_hidden)
-vim.keymap.set('n', '<leader>v', oil.toggle_hidden)
----- Love
-vim.keymap.set('n', "<leader>vv", "<cmd>LoveRun<cr>")
-vim.keymap.set('n', "<leader>vs", "<cmd>LoveStop<cr>")
----- image preview (not supported in iterm2)
-vim.keymap.set('n', "<leader>i", image_preview.PreviewImageOil)
+cmd("set completeopt+=noselect")
 
+-- Markdown-specific settings
+vim.api.nvim_create_autocmd('BufWinEnter', {
+	pattern = { '*.md' },
+	callback = function()
+		vim.opt.wrap = true
+		-- vim.opt.colorcolumn = '80'
+		-- vim.opt.textwidth = 80
+	end,
+})
+
+vim.api.nvim_create_autocmd('BufWinLeave', {
+	pattern = { '*.md' },
+	callback = function()
+		vim.opt.wrap = false
+		-- vim.opt.colorcolumn = '120'
+		-- vim.opt.textwidth = 120
+	end,
+})
+
+-- Themes and appearance
+require "plugins/theme-manager"
 
 -- LSP configs
 -- had to install using `brew install lua-language-server`
 -- no folding-range
 vim.lsp.enable({ "lua_ls", "pylsp" })
-vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format)
 
--- Colors!!
--- vim.cmd("colorscheme vague")
-vim.cmd("colorscheme lytmode")
--- vim.cmd(":hi statusline guibg=#1e3e6e guifg=#000000")
--- vim.cmd(":hi statusline guibg=NONE")
-
--- Some modifitcations to the theme
-vim.cmd(":hi statusline guibg=NONE guifg=#cc8222")
--- set the background of the ui black
-vim.cmd(":hi Normal guibg=black")
-vim.cmd(":hi SignColumn guibg=black")
-vim.cmd(":hi LineNr guibg=black guifg=#444444")
--- set the number column numbers to a dark gray
-vim.cmd(":hi CursorLineNr guibg=#000000 guifg=#000000")
-
--- make the line number of the current line stand out
-vim.cmd(":hi Folded guibg=black guifg=#ffffff")
-
-
--- Notes on some mappings so I don't forget --
--- Hover (vim.lsp.buf.hover()): shift-K, shift-K-K to go into the menu
--- Native LSP hover: Ctrl-W-D (window diagnostic)
---
--- Notes on Vim, i guess --
--- Buffers, Windows, and Tabs --
--- Buffer: text file in memory. :ls to view them
--- Window: viewport on the buffer. :vsp creates a vertical split, two viewports
-
--- on one buffer. :b *name of buffer* to show a buffer in a window
-
--- Tabs: collection of windows. Basically a layout, not actually a tab
---
--- Commenting:
--- g is a weird command that puts vim into a mode i do not currently understand. does some useful stuff tho
--- gc{motion} comments out whatever is described by the motion
--- gcc comments out a single line (kinda?)
--- gx goes to the link/executes a program
+keymap.set('n', '<leader>lf', vim.lsp.buf.format)
