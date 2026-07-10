@@ -79,44 +79,10 @@ pack.add({
   --   run = 'yarn install --frozen-lockfile --production',
   --   ft = {'javascript', 'typescript', 'css', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'}
   -- }
+	-- claude
+ 	{ src = "https://github.com/greggh/claude-code.nvim.git" },
 })
 
--- Config copilot plugin
--- require "copilot".setup({
--- 	suggestion = {
--- 		enabled = true,
--- 		auto_trigger = true
--- 	},
--- 	panel = {
--- 		enabled = true,
--- 		auto_refresh = true,
--- 		layout = {
--- 			position = "right", -- | top | left | right | bottom |
--- 			ratio = 0.4
--- 		},
--- 	},
--- })
-
--- local function _copilot_toggle()
--- 	if vim.g.copilot_enabled == nil then
--- 		vim.g.copilot_enabled = true
--- 	end
---
--- 	if vim.g.copilot_enabled then
--- 		print("Copilot disabled")
--- 	else
--- 		print("Copilot enabled")
--- 	end
---
--- 	-- this just tracks the state, toggle_auto_trigger actually does the
--- 	-- disable/enable
--- 	vim.g.copilot_enabled = not vim.g.copilot_enabled
---
--- 	require("copilot.suggestion").toggle_auto_trigger()
--- end
---
--- keymap.set("n", "<leader>c", _copilot_toggle, { noremap = true, silent = true })
--- keymap.set("n", "<leader>cp", ":Copilot panel toggle<CR>")
 
 -- Config marks plubing
 require "marks".setup({
@@ -197,6 +163,9 @@ require "nvim-treesitter.configs".setup({
 	ensure_installed = { "astro", "lua", "typescript", "javascript", "css", "html", "python", "cpp" },
 	highlight = { enable = true }
 })
+
+-- claude config
+require "claude-code".setup()
 
 -- Auto Commands
 -- LSP-based autocompletion when LSP attaches
