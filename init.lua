@@ -16,7 +16,7 @@ opts.incsearch = true    -- n N to go to next, previous when incsearching. or so
 opts.ignorecase = true
 opts.foldmethod = "expr" -- zA (unfold all), zM (fold all), zj/zk (next/prev fold)
 opts.foldlevelstart = 99 -- when opening buffer, nothing is folded
--- vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opts.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 opts.foldtext = ""
 opts.scrolloff = 7
 
@@ -124,19 +124,10 @@ image_preview.setup()
 
 keymap.set('n', '<leader>f', ':Pick files<CR>')
 keymap.set('v', '<leader>f', '"fyaa:Pick files<CR>')
-keymap.set('n', '<leader>h', ':Pick help<nCR>')
+keymap.set('n', '<leader>h', ':Pick help<CR>')
 -- would like to figure out a way to pick from the man pages
 keymap.set('n', '<leader>F', ':Pick grep<CR>')
 -- Love2D config
-require "love2d.config".setup({
-	path_to_love_bin = "/Applications/love.app/Contents/MacOS/love",
-	debug_window_opts = {
-		split = "right"
-	}
-})
-
-vim.keymap.set('n', "<leader>vv", "<cmd>LoveRun<cr>")
-vim.keymap.set('n', "<leader>vs", "<cmd>LoveStop<cr>")
 require "plugins/love"
 
 
@@ -154,35 +145,42 @@ keymap.set('n', '<leader>ee', ":Oil<CR>")
 keymap.set('n', '<leader>ec', ":Oil ~/.config/nvim<CR>")
 keymap.set('n', '<leader>ef', oil.toggle_float)
 keymap.set('n', '<leader>eh', oil.toggle_hidden)
-keymap.set('n', '<leader>v', oil.toggle_hidden)
 keymap.set('n', "<leader>i", image_preview.PreviewImageOil)
 
 -- Mason and Treesitter config
 require "mason".setup()
 require "nvim-treesitter.configs".setup({
-	ensure_installed = { "astro", "lua", "typescript", "javascript", "css", "html", "python", "cpp" },
+	ensure_installed = { "astro", "lua", "typescript", "javascript", "css", "html", "python", "cpp", "c_sharp", "gdscript" },
 	highlight = { enable = true }
 })
 
 -- claude config
 require "claude-code".setup()
 
--- Auto Commands
--- LSP-based autocompletion when LSP attaches
-vim.api.nvim_create_autocmd('LspAttach', {
-	callback = function(ev)
-		local client = vim.lsp.get_client_by_id(ev.data.client_id)
-		if client == nil then
-			print("LSP client not found")
-			return
-		end
-		if client:supports_method('textDocument/completion') then
-			vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
-		end
-	end,
+-- nvim-cmp config
+local cmp = require "cmp"
+cmp.setup({
+	snippet = {
+		expand = function(args)
+			vim.snippet.expand(args.body)
+		end,
+	},
+	mapping = cmp.mapping.preset.insert({
+		['<C-b>'] = cmp.mapping.scroll_docs(-4),
+		['<C-f>'] = cmp.mapping.scroll_docs(4),
+		['<C-Space>'] = cmp.mapping.complete(),
+		['<CR>'] = cmp.mapping.confirm({ select = true }),
+	}),
+	sources = cmp.config.sources({
+		{ name = "nvim_lsp" },
+		{ name = "nvim_lsp_signature_help" },
+		{ name = "path" },
+	}, {
+		{ name = "buffer" },
+	}),
 })
 
-cmd("set completeopt+=noselect")
+cmd("set completeopt=menu,menuone,noselect")
 
 -- Markdown-specific settings
 vim.api.nvim_create_autocmd('BufWinEnter', {
@@ -209,6 +207,32 @@ require "plugins/theme-manager"
 -- LSP configs
 -- had to install using `brew install lua-language-server`
 -- no folding-range
-vim.lsp.enable({ "lua_ls", "pylsp" })
+vim.lsp.config('*', {
+	capabilities = require "cmp_nvim_lsp".default_capabilities(),
+})
+
+-- TODO: switch C# from omnisharp to roslyn_ls once it's worth the extra setup
+-- omnisharp scans its own process cwd for projects/solutions rather than taking
+-- a root argument, but Neovim doesn't set the LSP process's cwd to root_dir by
+-- default. Wrapping cmd as a function lets us pass the already-resolved
+-- config.root_dir through as the spawned process's cwd. (Explicit vim.lsp.config()
+-- calls always beat lsp/*.lua files on the runtimepath, so this is done here
+-- rather than in lsp/omnisharp.lua, to avoid losing a merge race against
+-- nvim-lspconfig's own bundled omnisharp.lua.)
+vim.lsp.config('omnisharp', {
+	cmd = function(dispatchers, config)
+		local cmd = {
+			vim.fn.executable('OmniSharp') == 1 and 'OmniSharp' or 'omnisharp',
+			'-z',
+			'--hostPID', tostring(vim.fn.getpid()),
+			'DotNet:enablePackageRestore=false',
+			'--encoding', 'utf-8',
+			'--languageserver',
+		}
+		return vim.lsp.rpc.start(cmd, dispatchers, { cwd = config.root_dir })
+	end,
+})
+
+vim.lsp.enable({ "lua_ls", "pylsp", "ts_ls", "html", "cssls", "omnisharp", "gdscript" })
 
 keymap.set('n', '<leader>lf', vim.lsp.buf.format)
