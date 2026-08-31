@@ -14,7 +14,7 @@ opts.signcolumn = "yes"
 opts.winborder = "rounded"
 opts.termguicolors = true
 opts.incsearch = true    -- n N to go to next, previous when incsearching. or something
-opts.smartcase = true -- case insensitive searches if no caps in query, case sensitive if caps included
+opts.smartcase = true    -- case insensitive searches if no caps in query, case sensitive if caps included
 opts.foldmethod = "expr" -- zA (unfold all), zM (fold all), zj/zk (next/prev fold)
 opts.foldlevelstart = 99 -- when opening buffer, nothing is folded
 opts.foldexpr = "v:lua.vim.treesitter.foldexpr()"
@@ -74,8 +74,12 @@ pack.add({
 	{ src = "https://github.com/hrsh7th/cmp-buffer.git" },
 	{ src = "https://github.com/hrsh7th/cmp-path.git" },
 	{ src = "https://github.com/windwp/nvim-ts-autotag.git" },
+	{ src = "https://github.com/windwp/nvim-autopairs.git" },
+	{ src = "https://github.com/lewis6991/gitsigns.nvim.git" },
+	{ src = "https://github.com/folke/which-key.nvim.git" },
+	{ src = "https://github.com/nvim-mini/mini.extra" },
 	-- claude
- 	{ src = "https://github.com/greggh/claude-code.nvim.git" },
+	{ src = "https://github.com/greggh/claude-code.nvim.git" },
 })
 
 
@@ -89,6 +93,34 @@ require "marks".setup({
 -- Config neoscroll
 require "neoscroll".setup({
 	duration_multiplier = .5
+})
+
+-- Config which-key (labels the leader-key groups below so they show up in
+-- the popup instead of just a flat list of raw mappings)
+require "which-key".setup()
+require "which-key".add({
+	{ "<leader>e", group = "Explore (Oil)" },
+	{ "<leader>f", group = "Find" },
+	{ "<leader>c", group = "Git hunk" },
+	{ "<leader>l", group = "LSP" },
+})
+-- classic, modern, helix
+
+-- Config gitsigns (in-buffer git gutter signs, hunk staging/preview)
+require "gitsigns".setup({
+	on_attach = function(bufnr)
+		local function map(mode, lhs, rhs, desc)
+			keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
+		end
+		local gs = require "gitsigns"
+
+		map('n', ']h', gs.next_hunk, "Next hunk")
+		map('n', '[h', gs.prev_hunk, "Prev hunk")
+		map('n', '<leader>cs', gs.stage_hunk, "Stage hunk")
+		map('n', '<leader>cr', gs.reset_hunk, "Reset hunk")
+		map('n', '<leader>cp', gs.preview_hunk, "Preview hunk")
+		map('n', '<leader>cb', gs.toggle_current_line_blame, "Toggle line blame")
+	end,
 })
 
 -- Config lazygit
@@ -122,6 +154,14 @@ keymap.set('v', '<leader>f', '"fyaa:Pick files<CR>')
 keymap.set('n', '<leader>h', ':Pick help<CR>')
 -- would like to figure out a way to pick from the man pages
 keymap.set('n', '<leader>F', ':Pick grep<CR>')
+
+-- Mini Extra: extra mini.pick pickers (diagnostics, LSP symbols, oldfiles)
+require "mini.extra".setup()
+local mini_extra = require "mini.extra"
+keymap.set('n', '<leader>fd', mini_extra.pickers.diagnostic, { desc = "Diagnostics" })
+keymap.set('n', '<leader>fo', mini_extra.pickers.oldfiles, { desc = "Recent files" })
+keymap.set('n', '<leader>fs', function() mini_extra.pickers.lsp({ scope = 'document_symbol' }) end,
+	{ desc = "Document symbols" })
 
 -- Grep a string project-wide without the interactive prompt (e.g. to jump
 -- from `document.getElementById("manual-url")` in a .js file to the matching
@@ -174,11 +214,11 @@ oil.setup({
 })
 
 require("oil-git").setup()
-keymap.set('n', '<leader>ee', ":Oil<CR>")
-keymap.set('n', '<leader>ec', ":Oil ~/.config/nvim<CR>")
-keymap.set('n', '<leader>ef', oil.toggle_float)
-keymap.set('n', '<leader>eh', oil.toggle_hidden)
-keymap.set('n', "<leader>i", image_preview.PreviewImageOil)
+keymap.set('n', '<leader>ee', ":Oil<CR>", { desc = "Open oil to the current directory" })
+keymap.set('n', '<leader>ec', ":Oil ~/.config/nvim<CR>", { desc = "Open Oil to the nvim config" })
+keymap.set('n', '<leader>ef', oil.toggle_float, { desc = "Open Oil to a floating window" })
+keymap.set('n', '<leader>eh', oil.toggle_hidden, { desc = "Hide/show the hidden files in the directory" })
+keymap.set('n', "<leader>i", image_preview.PreviewImageOil, { desc = "Open an image preview of the file under the cursor" })
 
 -- Mason and Treesitter config
 require "mason".setup()
@@ -218,6 +258,12 @@ cmp.setup({
 
 cmd("set completeopt=menu,menuone,noselect")
 
+-- Autopairs (bracket/quote auto-close), wired to auto-add the closing pair
+-- of a function call when a completion is confirmed (e.g. confirming
+-- `foo` inserts `foo()` with the cursor between the parens).
+require "nvim-autopairs".setup()
+cmp.event:on('confirm_done', require "nvim-autopairs.completion.cmp".on_confirm_done())
+
 -- Markdown-specific settings
 vim.api.nvim_create_autocmd('BufWinEnter', {
 	pattern = { '*.md' },
@@ -247,7 +293,19 @@ vim.lsp.config('*', {
 	capabilities = require "cmp_nvim_lsp".default_capabilities(),
 })
 
-vim.lsp.inlay_hint.enable(true) 
+vim.lsp.inlay_hint.enable(true)
+
+-- eslint (JS/TS linter, separate from ts_ls which only type-checks). Only
+-- attaches in projects with an eslint config file. Requires the
+-- `vscode-eslint-language-server` binary on $PATH:
+--   npm i -g vscode-langservers-extracted
+-- or `:MasonInstall eslint-lsp`.
+-- Its auto-fixable rules are applied on save from the format-on-save
+-- autocmd below (before formatting runs), so eslint fixes and formatting
+-- can't race or apply out of order.
+
+-- TODO (deferred, noted 2026-08-31): add nvim-dap + nvim-dap-ui + netcoredbg
+-- for step-through C# debugging. Skipping for now.
 
 -- TODO: switch C# from omnisharp to roslyn_ls once it's worth the extra setup
 -- omnisharp scans its own process cwd for projects/solutions rather than taking
@@ -271,7 +329,7 @@ vim.lsp.config('omnisharp', {
 	end,
 })
 
-vim.lsp.enable({ "lua_ls", "pylsp", "ts_ls", "html", "cssls", "omnisharp", "gdscript", "markdown", "marksman" })
+vim.lsp.enable({ "lua_ls", "pylsp", "ts_ls", "html", "cssls", "eslint", "omnisharp", "gdscript", "markdown", "marksman" })
 
 -- Notify when a normal file buffer has no LSP client attached (e.g. no server
 -- configured for the filetype, or the configured one failed to start).
@@ -293,11 +351,22 @@ vim.api.nvim_create_autocmd('FileType', {
 
 keymap.set('n', '<leader>lf', vim.lsp.buf.format)
 
--- Format on save (LSP-backed: html, cssls, ts_ls all support textDocument/formatting)
+-- Format on save (LSP-backed: html, cssls, ts_ls all support textDocument/formatting).
+-- For js/ts, apply eslint's auto-fixable rules first, synchronously, so they
+-- land before (and don't race with) the formatter.
 vim.api.nvim_create_autocmd('BufWritePre', {
 	group = vim.api.nvim_create_augroup('FormatOnSave', { clear = true }),
 	pattern = { '*.html', '*.css', '*.js', '*.jsx', '*.ts', '*.tsx' },
 	callback = function(args)
+		local eslint = vim.lsp.get_clients({ bufnr = args.buf, name = 'eslint' })[1]
+		if eslint then
+			eslint:request_sync('workspace/executeCommand', {
+				command = 'eslint.applyAllFixes',
+				arguments = {
+					{ uri = vim.uri_from_bufnr(args.buf), version = vim.lsp.util.buf_versions[args.buf] },
+				},
+			}, 2000, args.buf)
+		end
 		vim.lsp.buf.format({ bufnr = args.buf, timeout_ms = 2000 })
 	end,
 })
