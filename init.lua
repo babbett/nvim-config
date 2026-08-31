@@ -9,16 +9,19 @@ opts.wrap = false
 opts.tabstop = 2
 opts.shiftwidth = 2
 opts.swapfile = false
+opts.undofile = true -- save undo history to `undodir`
 opts.signcolumn = "yes"
 opts.winborder = "rounded"
 opts.termguicolors = true
 opts.incsearch = true    -- n N to go to next, previous when incsearching. or something
-opts.ignorecase = true
+opts.smartcase = true -- case insensitive searches if no caps in query, case sensitive if caps included
 opts.foldmethod = "expr" -- zA (unfold all), zM (fold all), zj/zk (next/prev fold)
 opts.foldlevelstart = 99 -- when opening buffer, nothing is folded
 opts.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 opts.foldtext = ""
 opts.scrolloff = 7
+opts.updatetime = 750 -- recommended time [here](https://www.reddit.com/r/vim/comments/3ql651/what_do_you_set_your_updatetime_to/)
+
 
 
 -- Link the OS and Vim clipboard together, scheduled after startup (decrease load time)
@@ -61,9 +64,7 @@ pack.add({
 	{ src = "https://github.com/karb94/neoscroll.nvim" },
 	{ src = "https://github.com/benomahony/oil-git.nvim" },
 	{ src = "https://github.com/nvim-mini/mini.icons" },
-	{ src = "https://github.com/zbirenbaum/copilot.lua" },
 	{ src = "https://github.com/chentoast/marks.nvim" },
-	{ src = "https://github.com/davidmh/mdx.nvim.git" },
 	-- web dev lsps
 	--   use 'neovim/nvim-lspconfig'
 	{ src = "https://github.com/neovim/nvim-lspconfig.git" },
@@ -245,6 +246,8 @@ require "plugins/theme-manager"
 vim.lsp.config('*', {
 	capabilities = require "cmp_nvim_lsp".default_capabilities(),
 })
+
+vim.lsp.inlay_hint.enable(true) 
 
 -- TODO: switch C# from omnisharp to roslyn_ls once it's worth the extra setup
 -- omnisharp scans its own process cwd for projects/solutions rather than taking
