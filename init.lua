@@ -121,6 +121,41 @@ keymap.set('v', '<leader>f', '"fyaa:Pick files<CR>')
 keymap.set('n', '<leader>h', ':Pick help<CR>')
 -- would like to figure out a way to pick from the man pages
 keymap.set('n', '<leader>F', ':Pick grep<CR>')
+
+-- Grep a string project-wide without the interactive prompt (e.g. to jump
+-- from `document.getElementById("manual-url")` in a .js file to the matching
+-- id="manual-url" in an .html file).
+local function grep_pattern(pattern)
+	if pattern == '' then return end
+	-- Escape regex metacharacters so the search is a literal match, since
+	-- mini.pick passes the pattern straight through to ripgrep as a regex.
+	local escaped = pattern:gsub('[%^%$%.%*%+%?%(%)%[%]%{%}%|\\]', '\\%0')
+	require("mini.pick").builtin.grep({ pattern = escaped })
+end
+
+-- Normal mode: grep the quoted string under the cursor (covers
+-- `getElementById("manual-url")`), falling back to the word under the cursor.
+keymap.set('n', '<leader>fw', function()
+	local line = vim.api.nvim_get_current_line()
+	local col = vim.api.nvim_win_get_cursor(0)[2] + 1
+	local from = 1
+	while true do
+		local s, e, str = line:find('["\']([^"\']-)["\']', from)
+		if not s then break end
+		if col >= s and col <= e then
+			grep_pattern(str)
+			return
+		end
+		from = e + 1
+	end
+	grep_pattern(vim.fn.expand('<cword>'))
+end, { desc = "Grep string/word under cursor" })
+
+-- Visual mode: grep the selected text.
+keymap.set('x', '<leader>fw', function()
+	vim.cmd('normal! "zy')
+	grep_pattern(vim.fn.getreg('z'))
+end, { desc = "Grep visual selection" })
 -- Love2D config
 require "plugins/love"
 
