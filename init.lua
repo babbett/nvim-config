@@ -35,14 +35,14 @@ vim.g.mapleader = ' '
 
 -- Basic keymap stuff
 ---- save/quit
-keymap.set('n', '<leader>o', ':update<CR> :source<CR>')
-keymap.set('n', '<leader>w', ':write<CR>')
-keymap.set({ 'n', 'x' }, '<leader>q', ':quit<CR>')
+keymap.set('n', '<leader>o', ':update<CR> :source<CR>', { desc = "Source as config" })
+keymap.set('n', '<leader>w', ':write<CR>', { desc = "Write buffer" })
+keymap.set({ 'n', 'x' }, '<leader>q', ':quit<CR>', { desc = "Quit" })
 ---- yanking
-keymap.set({ 'n', 'v', 'x' }, '<leader>y', '"+y<CR>')
-keymap.set({ 'n', 'v', 'x' }, '<leader>d', '"+d<CR>')
-keymap.set({ 'n', 'v', 'x' }, '<leader>s', ':e #<CR>')
-keymap.set({ 'n', 'v', 'x' }, '<leader>S', ':sf #<CR>')
+keymap.set({ 'n', 'v', 'x' }, '<leader>y', '"+y<CR>', { desc = "Yank to clipboard" })
+keymap.set({ 'n', 'v', 'x' }, '<leader>d', '"+d<CR>', { desc = "Cut to clipboard" })
+keymap.set({ 'n', 'v', 'x' }, '<leader>s', ':e #<CR>', { desc = "Swap to the alternate-buffer file" })
+keymap.set({ 'n', 'v', 'x' }, '<leader>S', ':sf #<CR>', { desc = "Split the alternate-buffer file" })
 
 keymap.set('n', '<C-j>', '<C-w>j')
 keymap.set('n', '<C-k>', '<C-w>k')
@@ -97,12 +97,15 @@ require "neoscroll".setup({
 
 -- Config which-key (labels the leader-key groups below so they show up in
 -- the popup instead of just a flat list of raw mappings)
-require "which-key".setup()
+require "which-key".setup({
+	preset = "helix"
+})
 require "which-key".add({
 	{ "<leader>e", group = "Explore (Oil)" },
 	{ "<leader>f", group = "Find" },
 	{ "<leader>c", group = "Git hunk" },
 	{ "<leader>l", group = "LSP" },
+	{ "<leader>v", group = "Love2D" },
 })
 -- classic, modern, helix
 
@@ -132,7 +135,7 @@ local function _lazygit_toggle()
 	lazygit:toggle()
 end
 
-keymap.set("n", "<leader>g", _lazygit_toggle, { noremap = true, silent = true })
+keymap.set("n", "<leader>g", _lazygit_toggle, { desc = "Open Lazygit", noremap = true, silent = true })
 
 -- Config terminal
 local floatterm = Terminal:new({ direction = "float" })
@@ -141,19 +144,19 @@ local function _float_term_toggle()
 	floatterm:toggle()
 end
 
-keymap.set("n", "<leader>t", _float_term_toggle, { noremap = true, silent = true })
-keymap.set('n', '<leader>T', ':below terminal<CR>i')
+keymap.set("n", "<leader>t", _float_term_toggle, { desc = "Open terminal", noremap = true, silent = true })
+keymap.set('n', '<leader>T', ':below terminal<CR>i', { desc = "Open terminal at the bottom" })
 
 -- Mini Pick config
 require "mini.pick".setup()
 local image_preview = require "image_preview"
 image_preview.setup()
 
-keymap.set('n', '<leader>f', ':Pick files<CR>')
-keymap.set('v', '<leader>f', '"fyaa:Pick files<CR>')
-keymap.set('n', '<leader>h', ':Pick help<CR>')
+keymap.set('n', '<leader>f', ':Pick files<CR>', { desc = "File search" })
+keymap.set('v', '<leader>f', '"fyaa:Pick files<CR>', { desc = "[File] search" })
+keymap.set('n', '<leader>h', ':Pick help<CR>', { desc = "Help search" })
 -- would like to figure out a way to pick from the man pages
-keymap.set('n', '<leader>F', ':Pick grep<CR>')
+keymap.set('n', '<leader>F', ':Pick grep<CR>', { desc = "Grep search" })
 
 -- Mini Extra: extra mini.pick pickers (diagnostics, LSP symbols, oldfiles)
 require "mini.extra".setup()
@@ -218,7 +221,8 @@ keymap.set('n', '<leader>ee', ":Oil<CR>", { desc = "Open oil to the current dire
 keymap.set('n', '<leader>ec', ":Oil ~/.config/nvim<CR>", { desc = "Open Oil to the nvim config" })
 keymap.set('n', '<leader>ef', oil.toggle_float, { desc = "Open Oil to a floating window" })
 keymap.set('n', '<leader>eh', oil.toggle_hidden, { desc = "Hide/show the hidden files in the directory" })
-keymap.set('n', "<leader>i", image_preview.PreviewImageOil, { desc = "Open an image preview of the file under the cursor" })
+keymap.set('n', "<leader>i", image_preview.PreviewImageOil,
+	{ desc = "Image preview of the file under the cursor" })
 
 -- Mason and Treesitter config
 require "mason".setup()
@@ -349,7 +353,7 @@ vim.api.nvim_create_autocmd('FileType', {
 	end,
 })
 
-keymap.set('n', '<leader>lf', vim.lsp.buf.format)
+keymap.set('n', '<leader>lf', vim.lsp.buf.format, { desc = "Language Format" })
 
 -- Format on save (LSP-backed: html, cssls, ts_ls all support textDocument/formatting).
 -- For js/ts, apply eslint's auto-fixable rules first, synchronously, so they
