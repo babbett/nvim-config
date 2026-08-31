@@ -1,5 +1,9 @@
 {
   "plugins": {
+    "claude-code.nvim": {
+      "rev": "55c0cb59828fbc3bec744288286a46f5d5750b83",
+      "src": "https://github.com/greggh/claude-code.nvim.git"
+    },
     "cmp-buffer": {
       "rev": "b74fab3656eea9de20a9b8116afa3cfc4ec09657",
       "src": "https://github.com/hrsh7th/cmp-buffer.git"
@@ -72,6 +76,10 @@
       "rev": "42fc28ba918343ebfd5565147a42a26580579482",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
+    "nvim-ts-autotag": {
+      "rev": "88c1453db4ba7dd24131086fe51fdf74e587d275",
+      "src": "https://github.com/windwp/nvim-ts-autotag.git"
+    },
     "oil-git.nvim": {
       "rev": "d1f27a5982df35b70fb842aa6bbfac10735c7265",
       "src": "https://github.com/benomahony/oil-git.nvim"
@@ -87,10 +95,6 @@
     "vague.nvim": {
       "rev": "6c44ca64a7efc89bb86f501602e6ddd51bc92b3a",
       "src": "https://github.com/vague2k/vague.nvim"
-    },
-    "vim-prettier": {
-      "rev": "7dbdbb12c50a9f4ba72390cce2846248e4368fd0",
-      "src": "https://github.com/prettier/vim-prettier.git"
     }
   }
 }
