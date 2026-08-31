@@ -72,13 +72,7 @@ pack.add({
 	{ src = "https://github.com/hrsh7th/cmp-nvim-lsp-signature-help.git" },
 	{ src = "https://github.com/hrsh7th/cmp-buffer.git" },
 	{ src = "https://github.com/hrsh7th/cmp-path.git" },
-  -- Prettier
-	{ src = "https://github.com/prettier/vim-prettier.git" },
-  -- use {
-  --   'prettier/vim-prettier',
-  --   run = 'yarn install --frozen-lockfile --production',
-  --   ft = {'javascript', 'typescript', 'css', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'}
-  -- }
+	{ src = "https://github.com/windwp/nvim-ts-autotag.git" },
 	-- claude
  	{ src = "https://github.com/greggh/claude-code.nvim.git" },
 })
@@ -130,6 +124,9 @@ keymap.set('n', '<leader>F', ':Pick grep<CR>')
 -- Love2D config
 require "plugins/love"
 
+-- Buffer popout (floating window toggle)
+require "plugins/popout"
+
 
 -- Mini icons (for oil)
 require "mini.icons".setup()
@@ -153,6 +150,9 @@ require "nvim-treesitter.configs".setup({
 	ensure_installed = { "astro", "lua", "typescript", "javascript", "css", "html", "python", "cpp", "c_sharp", "gdscript" },
 	highlight = { enable = true }
 })
+
+-- Auto-close and auto-rename html/jsx/etc tags based on treesitter
+require "nvim-ts-autotag".setup()
 
 -- claude config
 require "claude-code".setup()
@@ -233,6 +233,33 @@ vim.lsp.config('omnisharp', {
 	end,
 })
 
-vim.lsp.enable({ "lua_ls", "pylsp", "ts_ls", "html", "cssls", "omnisharp", "gdscript" })
+vim.lsp.enable({ "lua_ls", "pylsp", "ts_ls", "html", "cssls", "omnisharp", "gdscript", "markdown", "marksman" })
+
+-- Notify when a normal file buffer has no LSP client attached (e.g. no server
+-- configured for the filetype, or the configured one failed to start).
+-- Deferred to give the client time to spawn and attach before checking.
+vim.api.nvim_create_autocmd('FileType', {
+	group = vim.api.nvim_create_augroup('LspAttachCheck', { clear = true }),
+	callback = function(args)
+		local bufnr, ft = args.buf, args.match
+		if ft == '' then return end
+		vim.defer_fn(function()
+			if not vim.api.nvim_buf_is_valid(bufnr) then return end
+			if vim.bo[bufnr].buftype ~= '' then return end
+			if #vim.lsp.get_clients({ bufnr = bufnr }) == 0 then
+				vim.notify('No LSP found for ' .. ft, vim.log.levels.WARN)
+			end
+		end, 1000)
+	end,
+})
 
 keymap.set('n', '<leader>lf', vim.lsp.buf.format)
+
+-- Format on save (LSP-backed: html, cssls, ts_ls all support textDocument/formatting)
+vim.api.nvim_create_autocmd('BufWritePre', {
+	group = vim.api.nvim_create_augroup('FormatOnSave', { clear = true }),
+	pattern = { '*.html', '*.css', '*.js', '*.jsx', '*.ts', '*.tsx' },
+	callback = function(args)
+		vim.lsp.buf.format({ bufnr = args.buf, timeout_ms = 2000 })
+	end,
+})
